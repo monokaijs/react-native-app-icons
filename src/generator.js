@@ -136,7 +136,7 @@ function generateIosContentsJson() {
     images,
     info: {
       version: 1,
-      author: 'react-native-app-icons'
+      author: 'rn-app-icons'
     }
   };
 }

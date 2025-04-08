@@ -8,7 +8,7 @@ const { generateIcons } = require('./src/generator');
 const packageJson = require('./package.json');
 
 program
-  .name('react-native-app-icons')
+  .name('rn-app-icons')
   .description('Generate app icons for React Native applications')
   .version(packageJson.version)
   .requiredOption('-i, --input <path>', 'Path to the source image (PNG format recommended)')

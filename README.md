@@ -15,13 +15,13 @@ A command-line tool to generate app icons for React Native applications from a s
 ### Global Installation
 
 ```bash
-npm install -g react-native-app-icons
+npm install -g rn-app-icons
 ```
 
 ### Local Installation
 
 ```bash
-npm install --save-dev react-native-app-icons
+npm install --save-dev rn-app-icons
 ```
 
 ## Usage
@@ -29,7 +29,7 @@ npm install --save-dev react-native-app-icons
 ### Basic Usage
 
 ```bash
-npx react-native-app-icons --input icon.png
+npx rn-app-icons --input icon.png
 ```
 
 This will generate all required app icons for both iOS and Android platforms in the `./app-icons` directory.
@@ -37,7 +37,7 @@ This will generate all required app icons for both iOS and Android platforms in 
 ### Command Line Options
 
 ```
-Usage: react-native-app-icons [options]
+Usage: rn-app-icons [options]
 
 Generate app icons for React Native applications
 
@@ -55,19 +55,19 @@ Options:
 Generate icons for iOS only:
 
 ```bash
-npx react-native-app-icons --input icon.png --platforms ios
+npx rn-app-icons --input icon.png --platforms ios
 ```
 
 Generate icons for Android only with a custom output directory:
 
 ```bash
-npx react-native-app-icons --input icon.png --platforms android --output ./assets/icons
+npx rn-app-icons --input icon.png --platforms android --output ./assets/icons
 ```
 
 Clear the output directory before generating new icons:
 
 ```bash
-npx react-native-app-icons --input icon.png --clear
+npx rn-app-icons --input icon.png --clear
 ```
 
 ## Requirements
