@@ -15,6 +15,7 @@ program
   .option('-o, --output <path>', 'Output directory for generated icons', './app-icons')
   .option('-p, --platforms <platforms>', 'Platforms to generate icons for (ios, android, or both)', 'both')
   .option('-c, --clear', 'Clear the output directory before generating new icons', false)
+  .option('-d, --no-detect', 'Disable auto-detection of project structure', false)
   .action(async (options) => {
     try {
       console.log(chalk.blue('\n🚀 React Native App Icons Generator'));
@@ -46,7 +47,8 @@ program
       await generateIcons({
         inputPath: options.input,
         outputPath: options.output,
-        platforms: options.platforms
+        platforms: options.platforms,
+        autoDetect: options.detect
       });
 
       console.log(chalk.green('\n✅ App icons generated successfully!'));
