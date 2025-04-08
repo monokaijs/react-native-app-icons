@@ -16,6 +16,7 @@ program
   .option('-p, --platforms <platforms>', 'Platforms to generate icons for (ios, android, or both)', 'both')
   .option('-c, --clear', 'Clear the output directory before generating new icons', false)
   .option('-d, --no-detect', 'Disable auto-detection of project structure', false)
+  .option('--debug', 'Enable debug mode with verbose logging', false)
   .action(async (options) => {
     try {
       console.log(chalk.blue('\n🚀 React Native App Icons Generator'));
@@ -43,12 +44,19 @@ program
         fs.emptyDirSync(options.output);
       }
 
+      // Set debug mode
+      if (options.debug) {
+        console.log(chalk.yellow('Debug mode enabled. Verbose logging will be shown.'));
+        console.log(chalk.gray(`Options: ${JSON.stringify(options, null, 2)}`));
+      }
+
       // Generate icons
       await generateIcons({
         inputPath: options.input,
         outputPath: options.output,
         platforms: options.platforms,
-        autoDetect: options.detect
+        autoDetect: options.detect,
+        debug: options.debug
       });
 
       console.log(chalk.green('\n✅ App icons generated successfully!'));

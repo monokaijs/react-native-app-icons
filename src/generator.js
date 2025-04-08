@@ -38,34 +38,50 @@ function findProjectPaths() {
 
   // Check if we're in a React Native project
   console.log(chalk.blue('\nScanning project structure...'));
+  console.log(chalk.gray(`Current directory: ${cwd}`));
 
   // Find iOS path
   const iosDir = path.join(cwd, 'ios');
+  console.log(chalk.gray(`Looking for iOS directory at: ${iosDir}`));
+
   if (fs.existsSync(iosDir)) {
+    console.log(chalk.gray(`iOS directory found. Scanning for .xcodeproj files...`));
     // Look for .xcodeproj files to determine app name
-    const files = fs.readdirSync(iosDir);
-    const xcodeproj = files.find(file => file.endsWith('.xcodeproj'));
+    try {
+      const files = fs.readdirSync(iosDir);
+      console.log(chalk.gray(`Files in iOS directory: ${files.join(', ')}`));
 
-    if (xcodeproj) {
-      const appName = xcodeproj.replace('.xcodeproj', '');
-      result.appName = appName;
+      const xcodeproj = files.find(file => file.endsWith('.xcodeproj'));
 
-      // Check if Images.xcassets exists
-      const assetsDir = path.join(iosDir, appName, 'Images.xcassets');
-      const appIconDir = path.join(assetsDir, 'AppIcon.appiconset');
+      if (xcodeproj) {
+        const appName = xcodeproj.replace('.xcodeproj', '');
+        result.appName = appName;
+        console.log(chalk.gray(`Found app name: ${appName}`));
 
-      if (fs.existsSync(assetsDir)) {
-        // Create AppIcon.appiconset if it doesn't exist
-        if (!fs.existsSync(appIconDir)) {
-          fs.ensureDirSync(appIconDir);
+        // Check if Images.xcassets exists
+        const assetsDir = path.join(iosDir, appName, 'Images.xcassets');
+        console.log(chalk.gray(`Looking for assets directory at: ${assetsDir}`));
+
+        const appIconDir = path.join(assetsDir, 'AppIcon.appiconset');
+
+        if (fs.existsSync(assetsDir)) {
+          console.log(chalk.gray(`Assets directory found. Looking for AppIcon.appiconset...`));
+          // Create AppIcon.appiconset if it doesn't exist
+          if (!fs.existsSync(appIconDir)) {
+            console.log(chalk.gray(`Creating AppIcon.appiconset directory...`));
+            fs.ensureDirSync(appIconDir);
+          }
+          result.ios = appIconDir;
+          console.log(chalk.green(`✓ Found iOS project: ${appName}`));
+          console.log(chalk.gray(`AppIcon.appiconset path: ${appIconDir}`));
+        } else {
+          console.log(chalk.yellow(`⚠ iOS project found but no Images.xcassets directory in ${appName}`));
         }
-        result.ios = appIconDir;
-        console.log(chalk.green(`✓ Found iOS project: ${appName}`));
       } else {
-        console.log(chalk.yellow(`⚠ iOS project found but no Images.xcassets directory in ${appName}`));
+        console.log(chalk.yellow('⚠ iOS directory found but no .xcodeproj file'));
       }
-    } else {
-      console.log(chalk.yellow('⚠ iOS directory found but no .xcodeproj file'));
+    } catch (error) {
+      console.log(chalk.red(`Error scanning iOS directory: ${error.message}`));
     }
   } else {
     console.log(chalk.yellow('⚠ No iOS directory found'));
@@ -73,15 +89,64 @@ function findProjectPaths() {
 
   // Find Android path
   const androidDir = path.join(cwd, 'android');
-  const androidResDir = path.join(androidDir, 'app', 'src', 'main', 'res');
+  console.log(chalk.gray(`Looking for Android directory at: ${androidDir}`));
 
-  if (fs.existsSync(androidResDir)) {
-    result.android = androidResDir;
-    console.log(chalk.green('✓ Found Android project'));
-  } else if (fs.existsSync(androidDir)) {
-    console.log(chalk.yellow('⚠ Android directory found but no res directory'));
+  if (fs.existsSync(androidDir)) {
+    console.log(chalk.gray(`Android directory found. Looking for res directory...`));
+    const androidResDir = path.join(androidDir, 'app', 'src', 'main', 'res');
+    console.log(chalk.gray(`Looking for res directory at: ${androidResDir}`));
+
+    if (fs.existsSync(androidResDir)) {
+      result.android = androidResDir;
+      console.log(chalk.green('✓ Found Android project'));
+      console.log(chalk.gray(`Android res directory: ${androidResDir}`));
+    } else {
+      console.log(chalk.yellow('⚠ Android directory found but no res directory'));
+    }
   } else {
     console.log(chalk.yellow('⚠ No Android directory found'));
+  }
+
+  // Check if we found any project paths
+  if (!result.ios && !result.android) {
+    console.log(chalk.yellow('⚠ No React Native project structure detected'));
+
+    // Try to look for project in parent directories (up to 3 levels)
+    let currentDir = cwd;
+    let found = false;
+
+    for (let i = 0; i < 3; i++) {
+      currentDir = path.dirname(currentDir);
+      console.log(chalk.gray(`Looking in parent directory: ${currentDir}`));
+
+      const parentIosDir = path.join(currentDir, 'ios');
+      const parentAndroidDir = path.join(currentDir, 'android');
+
+      if (fs.existsSync(parentIosDir) || fs.existsSync(parentAndroidDir)) {
+        console.log(chalk.green(`✓ Found React Native project in parent directory: ${currentDir}`));
+        found = true;
+
+        // Recursively call findProjectPaths with the new directory
+        const originalCwd = process.cwd();
+        try {
+          process.chdir(currentDir);
+          const parentResult = findProjectPaths();
+          result.ios = parentResult.ios;
+          result.android = parentResult.android;
+          result.appName = parentResult.appName;
+        } catch (error) {
+          console.log(chalk.red(`Error scanning parent directory: ${error.message}`));
+        } finally {
+          process.chdir(originalCwd);
+        }
+
+        break;
+      }
+    }
+
+    if (!found) {
+      console.log(chalk.yellow('⚠ No React Native project found in parent directories'));
+    }
   }
 
   return result;
@@ -234,10 +299,20 @@ function generateIosContentsJson() {
  * @param {string} options.outputPath - Output directory for generated icons
  * @param {string} options.platforms - Platforms to generate icons for (ios, android, or both)
  * @param {boolean} options.autoDetect - Whether to auto-detect project paths (default: true)
+ * @param {boolean} options.debug - Whether to enable debug mode with verbose logging
  */
-async function generateIcons({ inputPath, outputPath, platforms, autoDetect = true }) {
+async function generateIcons({ inputPath, outputPath, platforms, autoDetect = true, debug = false }) {
+  console.log(chalk.gray(`Auto-detect project structure: ${autoDetect ? 'enabled' : 'disabled'}`));
+
   // Find project paths if auto-detect is enabled
   const projectPaths = autoDetect ? findProjectPaths() : { ios: null, android: null };
+
+  // Log the detected paths
+  if (autoDetect) {
+    console.log(chalk.gray('Detected project paths:'));
+    console.log(chalk.gray(`  iOS: ${projectPaths.ios || 'Not found'}`));
+    console.log(chalk.gray(`  Android: ${projectPaths.android || 'Not found'}`));
+  }
 
   if (platforms === 'ios' || platforms === 'both') {
     await generateIosIcons(inputPath, outputPath, projectPaths.ios);

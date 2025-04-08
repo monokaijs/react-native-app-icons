@@ -49,6 +49,7 @@ Options:
   -p, --platforms <platforms>  Platforms to generate icons for (ios, android, or both) (default: "both")
   -c, --clear                  Clear the output directory before generating new icons (default: false)
   -d, --no-detect              Disable auto-detection of project structure (default: false)
+  --debug                      Enable debug mode with verbose logging (default: false)
   -h, --help                   display help for command
 ```
 
@@ -76,6 +77,12 @@ Disable auto-detection of project structure:
 
 ```bash
 npx rn-app-icons --input icon.png --no-detect
+```
+
+Enable debug mode for troubleshooting:
+
+```bash
+npx rn-app-icons --input icon.png --debug
 ```
 
 ## Requirements
