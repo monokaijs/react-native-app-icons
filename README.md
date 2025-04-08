@@ -48,7 +48,7 @@ Options:
   -o, --output <path>          Output directory for generated icons (default: "./app-icons")
   -p, --platforms <platforms>  Platforms to generate icons for (ios, android, or both) (default: "both")
   -c, --clear                  Clear the output directory before generating new icons (default: false)
-  -d, --no-detect              Disable auto-detection of project structure (default: false)
+  -d, --no-detect              Disable auto-detection of project structure (auto-detection is enabled by default)
   --debug                      Enable debug mode with verbose logging (default: false)
   -h, --help                   display help for command
 ```
@@ -73,7 +73,7 @@ Clear the output directory before generating new icons:
 npx rn-app-icons --input icon.png --clear
 ```
 
-Disable auto-detection of project structure:
+Disable auto-detection of project structure (auto-detection is enabled by default):
 
 ```bash
 npx rn-app-icons --input icon.png --no-detect

@@ -15,7 +15,7 @@ program
   .option('-o, --output <path>', 'Output directory for generated icons', './app-icons')
   .option('-p, --platforms <platforms>', 'Platforms to generate icons for (ios, android, or both)', 'both')
   .option('-c, --clear', 'Clear the output directory before generating new icons', false)
-  .option('-d, --no-detect', 'Disable auto-detection of project structure', false)
+  .option('-d, --no-detect', 'Disable auto-detection of project structure (auto-detection is enabled by default)')
   .option('--debug', 'Enable debug mode with verbose logging', false)
   .action(async (options) => {
     try {
@@ -48,6 +48,8 @@ program
       if (options.debug) {
         console.log(chalk.yellow('Debug mode enabled. Verbose logging will be shown.'));
         console.log(chalk.gray(`Options: ${JSON.stringify(options, null, 2)}`));
+
+        console.log(chalk.gray(`Auto-detect is ${options.detect ? 'enabled' : 'disabled'}`));
       }
 
       // Generate icons
