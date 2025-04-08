@@ -1,0 +1,29 @@
+{
+  "name": "react-native-app-icons",
+  "version": "1.0.0",
+  "description": "CLI tool to generate app icons for React Native applications",
+  "main": "index.js",
+  "bin": {
+    "react-native-app-icons": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-native",
+    "app-icons",
+    "ios",
+    "android",
+    "icon-generator"
+  ],
+  "dependencies": {
+    "sharp": "^0.33.2",
+    "commander": "^11.1.0",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.2.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "private": false
+}
