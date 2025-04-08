@@ -1,6 +1,6 @@
 {
   "name": "rn-app-icons",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "CLI tool to generate app icons for React Native applications",
   "author": "MonokaiJs <monokaijs@gmail.com>",
   "main": "index.js",
