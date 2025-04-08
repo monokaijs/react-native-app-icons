@@ -1,11 +1,13 @@
 {
-  "name": "react-native-app-icons",
-  "version": "1.0.0",
+  "name": "rn-app-icons",
+  "version": "1.0.1",
   "description": "CLI tool to generate app icons for React Native applications",
+  "author": "MonokaiJs <monokaijs@gmail.com>",
   "main": "index.js",
   "bin": {
-    "react-native-app-icons": "./index.js"
+    "rn-app-icons": "./index.js"
   },
+  "private": false,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,6 +26,5 @@
   },
   "engines": {
     "node": ">=14.0.0"
-  },
-  "private": false
+  }
 }
