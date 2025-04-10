@@ -7,6 +7,7 @@ A command-line tool to generate app icons for React Native applications from a s
 - Generate iOS and Android app icons from a single source image
 - Automatically resize images to all required dimensions
 - Create round icons for Android
+- Generate notification icons for Android
 - Generate Contents.json file for iOS
 - Auto-detect React Native project structure and place icons in the correct locations
 - Simple command-line interface
@@ -49,6 +50,7 @@ Options:
   -p, --platforms <platforms>  Platforms to generate icons for (ios, android, or both) (default: "both")
   -c, --clear                  Clear the output directory before generating new icons (default: false)
   -d, --no-detect              Disable auto-detection of project structure (auto-detection is enabled by default)
+  -n, --notification           Generate notification icons for Android (default: false)
   --debug                      Enable debug mode with verbose logging (default: false)
   -h, --help                   display help for command
 ```
@@ -85,6 +87,12 @@ Enable debug mode for troubleshooting:
 npx rn-app-icons --input icon.png --debug
 ```
 
+Generate app icons with notification icons for Android:
+
+```bash
+npx rn-app-icons --input icon.png --notification
+```
+
 ## Requirements
 
 - Node.js 14 or higher
@@ -108,8 +116,9 @@ Generates all required icon sizes for Android, including:
 - Regular app icons for all densities (mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi)
 - Round app icons for all densities
 - Play Store icon (512x512)
+- Notification icons for all densities (when using the `--notification` option)
 
-If a React Native Android project is detected, icons will be placed directly in the appropriate `mipmap-*` directories.
+If a React Native Android project is detected, icons will be placed directly in the appropriate `mipmap-*` and `drawable-*` directories.
 
 ## License
 

@@ -24,6 +24,15 @@ const androidIconSizes = [
   { name: 'playstore', size: 512 } // Google Play Store
 ];
 
+// Define notification icon sizes for Android
+const androidNotificationIconSizes = [
+  { name: 'drawable-mdpi', size: 24 },
+  { name: 'drawable-hdpi', size: 36 },
+  { name: 'drawable-xhdpi', size: 48 },
+  { name: 'drawable-xxhdpi', size: 72 },
+  { name: 'drawable-xxxhdpi', size: 96 }
+];
+
 /**
  * Find React Native project paths
  * @returns {Object} Object containing iOS and Android project paths
@@ -300,8 +309,9 @@ function generateIosContentsJson() {
  * @param {string} options.platforms - Platforms to generate icons for (ios, android, or both)
  * @param {boolean} options.autoDetect - Whether to auto-detect project paths (default: true)
  * @param {boolean} options.debug - Whether to enable debug mode with verbose logging
+ * @param {boolean} options.notification - Whether to generate notification icons (default: false)
  */
-async function generateIcons({ inputPath, outputPath, platforms, autoDetect = true, debug = false }) {
+async function generateIcons({ inputPath, outputPath, platforms, autoDetect = true, debug = false, notification = false }) {
   console.log(chalk.gray(`Auto-detect project structure: ${autoDetect ? 'enabled' : 'disabled'}`));
 
   // Find project paths if auto-detect is enabled
@@ -320,11 +330,59 @@ async function generateIcons({ inputPath, outputPath, platforms, autoDetect = tr
 
   if (platforms === 'android' || platforms === 'both') {
     await generateAndroidIcons(inputPath, outputPath, projectPaths.android);
+
+    // Generate notification icons if requested
+    if (notification) {
+      await generateAndroidNotificationIcons(inputPath, outputPath, projectPaths.android);
+    }
   }
 
   console.log(chalk.blue('\nIcon generation complete!'));
 }
 
+/**
+ * Generate Android notification icons
+ * @param {string} inputPath - Path to the source image
+ * @param {string} outputPath - Output directory for generated icons
+ * @param {string|null} androidProjectPath - Path to Android project res directory
+ */
+async function generateAndroidNotificationIcons(inputPath, outputPath, androidProjectPath) {
+  // Create temporary output directory if no project path is found
+  const tempOutputPath = path.join(outputPath, 'android-notification');
+  const androidOutputPath = androidProjectPath || tempOutputPath;
+
+  console.log(chalk.blue('\nGenerating Android notification icons...'));
+
+  for (const { name, size } of androidNotificationIconSizes) {
+    // Create directory for each density
+    const dirPath = androidProjectPath ? path.join(androidOutputPath, name) : path.join(tempOutputPath, name);
+    fs.ensureDirSync(dirPath);
+
+    // Generate notification icon (white icon with transparent background)
+    const outputFilePath = path.join(dirPath, 'ic_stat_onesignal_default.png');
+
+    // Create a white silhouette of the icon
+    await sharp(inputPath)
+      .resize(size, size)
+      // Convert to grayscale and increase brightness to make it white
+      .grayscale()
+      .modulate({ brightness: 2 })
+      // Threshold to make it pure white on transparent background
+      .threshold(200)
+      .toFile(outputFilePath);
+
+    console.log(chalk.green(`✓ Generated: ${name}/ic_stat_onesignal_default.png (${size}x${size}px)`));
+  }
+
+  if (androidProjectPath) {
+    console.log(chalk.green(`✓ Notification icons placed in Android project: ${androidProjectPath}`));
+  } else {
+    console.log(chalk.yellow(`⚠ Notification icons generated in temporary directory: ${tempOutputPath}`));
+    console.log(chalk.yellow('  To use these icons, copy the drawable-* directories to your Android project\'s res directory'));
+  }
+}
+
 module.exports = {
-  generateIcons
+  generateIcons,
+  generateAndroidNotificationIcons
 };

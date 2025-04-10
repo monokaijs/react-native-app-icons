@@ -16,6 +16,7 @@ program
   .option('-p, --platforms <platforms>', 'Platforms to generate icons for (ios, android, or both)', 'both')
   .option('-c, --clear', 'Clear the output directory before generating new icons', false)
   .option('-d, --no-detect', 'Disable auto-detection of project structure (auto-detection is enabled by default)')
+  .option('-n, --notification', 'Generate notification icons for Android', false)
   .option('--debug', 'Enable debug mode with verbose logging', false)
   .action(async (options) => {
     try {
@@ -58,7 +59,8 @@ program
         outputPath: options.output,
         platforms: options.platforms,
         autoDetect: options.detect,
-        debug: options.debug
+        debug: options.debug,
+        notification: options.notification
       });
 
       console.log(chalk.green('\n✅ App icons generated successfully!'));
